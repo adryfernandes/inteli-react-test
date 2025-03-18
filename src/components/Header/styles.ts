@@ -18,6 +18,7 @@ export const Container = styled.header`
 
   @media (max-width: ${breakpoints.md}) {
     height: 48px;
+    padding: 2rem 1.5rem;
 
     img {
       width: 50px;

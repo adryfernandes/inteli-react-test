@@ -1,7 +1,7 @@
 import { Container, ItemsWrapper } from './styles';
 import logo from '../../assets/logo-branca.png';
 import useIsMobile from '../../hooks/useIsMobile';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { goToExec } from '../../router/coordinators';
 import { NavigateFunction } from 'react-router-dom';
 import { ButtonMenu } from './ButtonMenu';
@@ -15,34 +15,32 @@ interface ComponentProps {
 export function Menu({ navigate }: ComponentProps) {
   const isMobile = useIsMobile();
   const { pageActive, setPageActive } = usePageActive();
-  console.log(pageActive);
+
+  const goToPage = useCallback(
+    (exerciceNumber: number) => {
+      setPageActive(exerciceNumber);
+      goToExec(navigate, exerciceNumber);
+    },
+    [navigate, setPageActive],
+  );
 
   const menuItems = useMemo(() => {
     const exerciceQuantity = generateArray();
 
-    const goToPage = (navigate: NavigateFunction, exerciceNumber: number) => {
-      setPageActive(exerciceNumber);
-      goToExec(navigate, exerciceNumber);
-    };
-
     return exerciceQuantity.map((exerciceNumber) => (
       <ButtonMenu
         key={exerciceNumber}
-        onClick={() => goToPage(navigate, exerciceNumber)}
+        onClick={() => goToPage(exerciceNumber)}
         active={pageActive === exerciceNumber}
       >
         Exercício {padNumber(exerciceNumber)}
       </ButtonMenu>
     ));
-  }, [navigate, pageActive, setPageActive]);
-
-  const Image = () => {
-    return !isMobile && <img src={logo} alt="Logo" />;
-  };
+  }, [goToPage, pageActive]);
 
   return (
     <Container>
-      <Image />
+      {!isMobile && <img src={logo} alt="Logo" />}
       <ItemsWrapper>{menuItems}</ItemsWrapper>
     </Container>
   );
